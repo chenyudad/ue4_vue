@@ -1,28 +1,34 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <ue4iframe id="mainContainer" msg="引用ue4视频流" />
+    <CommandNav msg="引用菜单 " />
+    <WGSConvertForm msg="坐标转换 " />
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import ue4iframe from "./components/ue4iframe.vue";
+import CommandNav from "./components/commandNav.vue";
+import WGSConvertForm from "./components/WGSConvertForm.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    ue4iframe,
+    CommandNav,
+    WGSConvertForm,
+  },
+};
 </script>
 
 <style>
+html,
+body,
+#mainContainer,
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
 }
 </style>
