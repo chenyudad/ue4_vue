@@ -1,5 +1,3 @@
-
-
 ###安装npm及打包插件
 npm install -g
 npm install babel-cli browserify -g 
@@ -18,7 +16,8 @@ git commit -m 'first commit'
 git remote add origin https://github.com/chenyudad/vd-openapi.git
 ###提交到远程库master分支
 git push  origin master
-
+###提交到远程库main分支
+git push origin main
 ###删除暂存区或分支上的文件, 但本地又需要使用, 只是不希望这个文件被版本控制
 git rm -r --cached 目录名
 ###删除暂存区或分支上的文件,
@@ -29,7 +28,7 @@ fatal: Unable to create 'xxxx/.git/index.lock': File exists.
 del .git/index.lock
 
 
-node.js  ---npm    java maven
+node.js  ---npm    java maven ;c# nuget
 ========================
 webpack  手动搭建 vue.js
 vue-cli  vue脚手架 （3.0以上忽略大量webpack的配置,支持更新）
@@ -56,7 +55,10 @@ npm i @vue/cli -g    安装新版本
 
 spa   single page application
 vue-router  路由     
-vueX状态管理   
+VueX状态管理   
+Vuex与全局变量的区别 
+Vuex是响应式的
+vue3.x以上使用 provide、inject 替代Vuex
 
 eslint 语法 检查
 unit tests 按空间切割，对每个组件 都进行测试

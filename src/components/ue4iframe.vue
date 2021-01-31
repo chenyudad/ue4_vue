@@ -17,11 +17,12 @@
         alt=""
       />
     </div>
+
     <iframe id="uePage" v-bind:src="iframeSrc" />
   </div>
 </template>
 <script>
-import Config from "../Config.js";
+import Config from "../Config.js"; 
 export default {
   name: "UE4iframe",
   data() {
@@ -31,12 +32,12 @@ export default {
       commapss: require("@/assets/pointer.png"),
       commapssBg: require("@/assets/compass_200.png"),
     };
-  },
+  } 
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped> 
+<style scoped>
 html,
 body {
   margin: 0;
@@ -44,7 +45,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-} 
+}
 iframe {
   margin: 0;
   border-style: none;
