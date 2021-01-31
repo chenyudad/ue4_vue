@@ -1,20 +1,20 @@
 <template>
   <div id="app">
-    <ue4iframe id="mainContainer" msg="引用ue4视频流" />
+    <UE4iframe id="mainContainer" msg="引用ue4视频流" />
     <CommandNav msg="引用菜单 " />
     <WGSConvertForm msg="坐标转换 " />
   </div>
 </template>
 
 <script>
-import ue4iframe from "./components/ue4iframe.vue";
-import CommandNav from "./components/commandNav.vue";
+import UE4iframe from "./components/UE4iframe.vue";
+import CommandNav from "./components/CommandNav.vue";
 import WGSConvertForm from "./components/WGSConvertForm.vue";
 
 export default {
   name: "App",
   components: {
-    ue4iframe,
+    UE4iframe,
     CommandNav,
     WGSConvertForm,
   },

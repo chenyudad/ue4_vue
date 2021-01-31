@@ -56,7 +56,7 @@ npm i @vue/cli -g    安装新版本
 
 spa   single page application
 vue-router  路由     
-vueX状态管理
+vueX状态管理   
 
 eslint 语法 检查
 unit tests 按空间切割，对每个组件 都进行测试

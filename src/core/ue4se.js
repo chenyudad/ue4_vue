@@ -1,4 +1,4 @@
-import WGSConvert from "./TransformAxis/WGSConvert.js";
+import WGSConvert from "./TransformAxis/WGSConvert.js"; 
 import axios from 'axios';
 let ue4se = {
     // CreateLabel

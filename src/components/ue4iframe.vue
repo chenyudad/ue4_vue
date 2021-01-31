@@ -23,7 +23,7 @@
 <script>
 import Config from "../Config.js";
 export default {
-  name: "ue4iframe",
+  name: "UE4iframe",
   data() {
     // eslint-disable-next-line no-unused-labels
     return {
