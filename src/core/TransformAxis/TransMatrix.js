@@ -74,7 +74,9 @@ var LocalAndWorldTransform = function () {
         let localPos = this.WorldCoordinatesTolocal(Temp);
 
         return XzCartesian3.multiplyComponents(localPos, new XzCartesian3(1, 1, 0), new XzCartesian3());
-    } 
+    }; 
+
+
 };
 
 export default LocalAndWorldTransform;

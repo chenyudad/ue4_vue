@@ -9,7 +9,7 @@ let WGSConvert = {
                 let temp = new Vector2(lon, lat);
                 //经纬度转本地坐标  
                 let out = law.WGS84CoordinatesTolocal(temp.x, temp.y);
-                let axis = new Vector3(out.x, out.y, height);
+                let axis = new Vector3(out.x, out.y, height); 
                 return axis;
         },
 
@@ -21,7 +21,7 @@ let WGSConvert = {
                 let temp = new Vector2(lon, lat);
                 //经纬度转本地坐标  
                 let out = law.WGS84CoordinatesTolocalMetre(temp.x, temp.y);
-                let axis = new Vector3(out.x, out.y, height);
+                let axis = new Vector3(out.x, out.y, height); 
                 return axis;
         }
 }
