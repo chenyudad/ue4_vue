@@ -133,6 +133,11 @@ export default {
               41.595756,
               300
             ),
+            //  destination: WGSConvert.WGS84ToVector3ForM(
+            //   1000,
+            //   1000,
+            //   300
+            // ),
             // eslint-disable-next-line no-undef
             orientation: new Rotator(0, -70, 50),
           };
@@ -802,28 +807,28 @@ export default {
 
         case "8-1": {
           //实景区域镜头
-          ue4api.factory.CallEvent("SetPwan", 0);
+          ue4api.factory.CallEvent("SetPawn", 1);
           break;
         }
 
         case "8-2": {
           //全国行政区域镜头
-          ue4api.factory.CallEvent("SetPwan", 1);
+          ue4api.factory.CallEvent("SetPawn", 2);
           break;
         }
         case "8-3": {
           //经济圈区域镜头）
-          ue4api.factory.CallEvent("SetPwan", 2);
+          ue4api.factory.CallEvent("SetPawn", 3);
           break;
         }
         case "8-4": {
           //朝阳行政区划区域镜头
-          ue4api.factory.CallEvent("SetPwan", 3);
+          ue4api.factory.CallEvent("SetPawn", 4);
           break;
         }
         case "8-5": {
           //规划数据区域镜头
-          ue4api.factory.CallEvent("SetPwan", 4);
+          ue4api.factory.CallEvent("SetPawn", 5);
           break;
         }
         case "9-1": {

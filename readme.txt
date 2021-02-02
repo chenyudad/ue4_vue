@@ -43,6 +43,8 @@ npm info vue  查询vue信息
 npm install vue -g       安装正式版本
 npm install vue-lic -g   安装正式版本
 
+vue 2.x版本创建项目，vue3.x版本改为vue create命令
+vue init webpack my-project
 
 
 环境变量
