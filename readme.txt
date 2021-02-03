@@ -6,6 +6,13 @@ npm install babel-preset-es2015 --save-dev
 ####打包
 babel Scripts/src -d Scripts/lib
 browserify Scripts/lib/app.js -o Scripts/dist/bundle.js
+
+###查看所有分支情况，以及当前分支
+git branch -a 
+###创建分支temporary
+git branch temporary 
+###切换到temporary分支
+git checkout temporary 
 ###初始化
 git init
 ###添加到暂存区
