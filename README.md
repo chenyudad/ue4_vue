@@ -39,6 +39,16 @@ git branch -a
 git branch temporary 
 ###切换到temporary分支
 git checkout temporary 
+###分支删除
+###1 先切换到别的分支:
+git checkout temporary01 
+###2 删除本地分支： 
+git branch -d temporary
+###3 如果删除不了可以强制删除
+git branch -D temporary
+###4 删除远程分支：
+git push origin --delete temporary 
+
 ###初始化
 git init
 ###添加到暂存区
@@ -47,6 +57,9 @@ git add .
 git commit -m 'first commit'
 ###关联远程库
 git remote add origin https://github.com/chenyudad/vd-openapi.git
+###查看远程库
+git remote -v
+git remote show origin
 ###提交到远程库master分支
 git push  origin master
 ###提交到远程库main分支
