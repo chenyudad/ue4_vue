@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <UE4iframe class="ue4iframe" msg="" />
+    <UE4iframe class="ue4iframe" msg="Welcome to Your Vue.js App" />
     <Nav />
     <WGSConvertForm />
   </div>

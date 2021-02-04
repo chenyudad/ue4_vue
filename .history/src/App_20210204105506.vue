@@ -1,8 +1,7 @@
 <template>
   <div id="app">
-    <UE4iframe class="ue4iframe" msg="" />
-    <Nav />
-    <WGSConvertForm />
+    <UE4iframe class="ue4iframe" msg="Welcome to Your Vue.js App" />
+    <Nav class="Nav" msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
@@ -16,7 +15,6 @@ export default {
   components: {
     UE4iframe,
     Nav,
-    WGSConvertForm,
   },
 };
 </script>

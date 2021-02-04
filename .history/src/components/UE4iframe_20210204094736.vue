@@ -1,6 +1,6 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
+    <iframe id="uePage" v-bind:src="Config.iframeSrc"/>
   </div>
 </template>
 

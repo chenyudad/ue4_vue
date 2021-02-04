@@ -1,22 +1,16 @@
 <template>
   <div id="app">
-    <UE4iframe class="ue4iframe" msg="" />
-    <Nav />
-    <WGSConvertForm />
+    <UE4iframe class="ue4iframe" msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
 <script>
 import UE4iframe from "./components/UE4iframe.vue";
-import Nav from "./components/Nav.vue";
-import WGSConvertForm from "./components/WGSConvertForm.vue";
 
 export default {
   name: "App",
   components: {
     UE4iframe,
-    Nav,
-    WGSConvertForm,
   },
 };
 </script>
@@ -24,8 +18,7 @@ export default {
 <style>
 html,
 body,
-#app,
-.ue4iframe {
+#app,.ue4iframe {
   margin: 0;
   padding: 0;
   overflow: hidden;
