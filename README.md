@@ -80,8 +80,13 @@ webpack  手动搭建 vue.js
 vue-cli  vue脚手架 （3.0以上忽略大量webpack的配置,支持更新）
 
 
-npm config set prefix "d:\nodejs\node_global"
-npm config set cache "d:\nodejs\node_cache"
+环境变量
+NODE_PATH  D:\nodejs\node_global\node_modules	 
+path 	D:\nodejs\node_global 
+
+
+npm config set prefix "D:\nodejs\node_global"
+npm config set cache "D:\nodejs\node_cache"
 npm config set registry="https://registry.npm.taobao.org"
 npm config list
 配置文件    .npmrc
@@ -92,10 +97,6 @@ npm install vue-lic -g   安装正式版本
 vue 2.x版本创建项目，vue3.x版本改为vue create命令
 vue init webpack my-project
 npm list vue  
-
-环境变量
-NODE_PATH  D:\nodejs\node_global\node_modules	 
-path 	D:\nodejs\node_global
 
 vue create vue03
 npm uninstall -g vue-cli
@@ -128,8 +129,6 @@ npm i element-ui -S
 
 vue3.x
 npm install element-plus --save
-
-
 npm install axios
 
 
@@ -137,7 +136,28 @@ npm install axios
 
 
 
+1、安装nodejs程序
 
+2、添加环境变量
+NODE_PATH  D:\nodejs\node_global\node_modules	 
+path 	D:\nodejs\node_global 
+
+3、修改配置
+npm config set prefix "D:\nodejs\node_global"
+npm config set cache "D:\nodejs\node_cache"
+npm config set registry="https://registry.npm.taobao.org"
+
+4、 安装新版本vue-cli
+npm i @vue/cli -g   
+	4.1 创建vue项目
+		vue create xxx
+	4.2 添加element-plus、axios
+		npm install element-plus --save 
+		npm install axios
+
+5、打开web文件夹（打开已有项目，忽略4.x操作）
+npm run serve  运行调试环境
+npm run build  编译代码
 
 
 
