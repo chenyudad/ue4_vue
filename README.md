@@ -129,6 +129,9 @@ npm i element-ui -S
 
 vue3.x
 npm install element-plus --save
+
+
+
 npm install axios
 
 
@@ -138,9 +141,9 @@ npm install axios
 
 1、安装nodejs程序
 
-2、添加环境变量
-NODE_PATH  D:\nodejs\node_global\node_modules	 
-path 	D:\nodejs\node_global 
+2、添加环境变量 
+path 	D:\nodejs\node_global
+NODE_PATH  D:\nodejs\node_global\node_modules	
 
 3、修改配置
 npm config set prefix "D:\nodejs\node_global"
