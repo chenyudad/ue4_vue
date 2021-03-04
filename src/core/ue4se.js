@@ -7,9 +7,10 @@ let ue4se = {
         // eslint-disable-next-line no-undef
         let ue4api = new ue4api_xz('uePage');
         let vector3Tmp = null;
-        let _id = null;
+        let _id = null; 
         // eslint-disable-next-line no-undef
-        axios.get(JSONPath, {}).then(function (response) {
+        axios.get(JSONPath, {
+            }).then(function (response) {
             // console.info(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config));
             if (response.statusText == "OK") {
                 let _pois = response.data.pois;
@@ -49,7 +50,7 @@ let ue4se = {
                 return objMap;
             }
         }).catch(function (error) {
-            alert(error);
+            debugger;
         });
     },
     ///Billboard图层接口
@@ -71,7 +72,7 @@ let ue4se = {
                     console.info(element.name);
                     console.info(element.lonlat.split(',')); ///"lonlat": "120.457968,41.58348"
                     _id = new Date().getTime() + index;
-                    vector3Tmp = WGSConvert.WGS84ToVector3(element.lonlat.split(',')[0], element.lonlat.split(',')[1], 200);
+                    vector3Tmp = WGSConvert.WGS84ToVector3(element.lonlat.split(',')[0], element.lonlat.split(',')[1], 500);
                     console.table(vector3Tmp);
                     console.info(_id);
                     let param = {
@@ -84,7 +85,9 @@ let ue4se = {
                         clickedScale: 0.7,
                         visibility: true, //默认是否显示
                         alertWindow: { //可选，点击弹窗 
-                            url: "http://192.168.1.106:5500/item2.html?_id=" + element.name, //弹窗地址
+                           /// url: "http://192.168.1.106:5500/item2.html?_id=" + element.name, //弹窗地址
+                        //    url: "http://192.168.1.106:5500/item2.html?_id=" + element.name, //弹窗地址
+                        url: 'http://www.baidu.com',
                             // eslint-disable-next-line no-undef
                             size: new Vector2(580, 190), //弹窗大小
                             // eslint-disable-next-line no-undef
@@ -97,7 +100,6 @@ let ue4se = {
                 return objMap;
             }
         }).catch(function (error) {
-            alert(error);
         });
     },
     ///Billboard图层接口
@@ -146,8 +148,58 @@ let ue4se = {
                 return objMap;
             }
         }).catch(function (error) {
-            alert(error);
         });
     }
+    ,
+     // CreateLabel
+     LoadLabelByJSONWithoutWGS: function (JSONPath) {
+        let objMap = new Map();
+        // eslint-disable-next-line no-undef
+        let ue4api = new ue4api_xz('uePage');
+        let vector3Tmp = null;
+        let _id = null;
+        // eslint-disable-next-line no-undef
+        axios.get(JSONPath, {}).then(function (response) {
+            // console.info(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config));
+            if (response.statusText == "OK") {
+                let _pois = response.data.pois;
+                _pois.forEach(function (element, index) {
+                    // console.info(element.address);
+                    // console.info(element.phone);
+                    // console.info(element.name);
+                    // console.info(element.lonlat ); ///"lonlat": "120.457968,41.58348"
+                    // console.info(element.lonlat.split(',')[0] + "        " + element.lonlat.split(',')[1]);
+
+                    _id = new Date().getTime() + index;
+
+                    let param = {
+                        id: _id, //唯一标识，不可重复, 
+                        ue4x: element.X, //x轴ue4坐标
+                        ue4y: element.Y, //y轴ue4坐标
+                        ue4z: element.Z, //z轴ue4坐标   
+                        // location: WGSConvert.WGS84ToVector3(element.lonlat.split(',')[0], element.lonlat.split(',')[1], 300),
+
+                        // eslint-disable-next-line no-undef
+                        size: new Vector2(380, 180), //label的大小
+                        text: "井", //显示的文字
+                        scale: 0.2, //缩放
+                        type: 'Type2', //可选字符串参数：Default,Type1,Type2
+                        // eslint-disable-next-line no-undef
+                        backgroundColor: new Color(0.266356, 0.467784, 0.021219, 1), //文字框背景色
+                        // eslint-disable-next-line no-undef
+                        fillColor: DefaultColor.yellow, //文字颜色
+                        // eslint-disable-next-line no-undef
+                        distanceDisplayCondition: new Vector2(), //预留字段
+                        visibility: true //默认是否显示
+                    }
+                    console.table(param.location);
+                    let obj = ue4api.ObjectFactory.CreateLabel(param);
+                    objMap.set(_id, obj);
+                });
+                return objMap;
+            }
+        }).catch(function (error) {
+        });
+    },
 }
 export default ue4se;

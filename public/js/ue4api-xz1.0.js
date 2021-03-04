@@ -1055,8 +1055,12 @@ var bounds = function (w = -10000, e = 10000, s = 10000, n = -10000) {
         north: n
     };
 }
+function    mainPage(){
+
+    console.log("===========>>>>><<<<<===========");
+}
 //监听事件
-addEventListener('message', e => {
+addEventListener('message', e => { 
     console.info(e.data);
     //镜头位置，实时更新
     if (e.data.callBack === "CameraInfo") {
@@ -1086,7 +1090,6 @@ addEventListener('message', e => {
         }
     } else if (e.data.callBack === "CallBackNoParam") {
         if (e.data.customStr === "connected" && typeof mainPage === 'function') {
-
             // eslint-disable-next-line no-undef
             mainPage();
         } else if (e.data.customStr === "wsDisConnect" && typeof closedPage === 'function') {
@@ -1099,5 +1102,9 @@ addEventListener('message', e => {
             //无参回调
             callBackTemp();
         }
+    }
+    else if (e.data.data == undefined) {
+         mainPage();
+
     }
 });

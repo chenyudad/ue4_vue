@@ -88,6 +88,14 @@
         <el-menu-item index="9-3">行政区</el-menu-item>
         <el-menu-item index="9-4">大局部</el-menu-item>
       </el-submenu>
+
+      <el-submenu index="10">
+        <template slot="title"> 克拉玛依 </template>
+        <el-menu-item index="10-1">测试井盖</el-menu-item>
+        <el-menu-item index="10-2">雨雪</el-menu-item>
+        <el-menu-item index="10-3">行政区</el-menu-item>
+        <el-menu-item index="10-4">大局部</el-menu-item>
+      </el-submenu>
     </el-menu>
   </div>
 </template> 
@@ -100,6 +108,7 @@ var _isshow = false;
 //特效对象
 let effectObj = null;
 let clickIndex = 0;
+let ue4api = null;
 export default {
   name: "CommandNav",
   data() {
@@ -111,9 +120,6 @@ export default {
   methods: {
     // eslint-disable-next-line no-unused-vars
     handleSelect(key, keyPath) {
-      //初始化UE4api类
-      // eslint-disable-next-line no-undef
-      var ue4api = new ue4api_xz("uePage");
       // console.log(key, keyPath);
 
       // var vector3 = WGSConvert.WGS84ToVector3(120.481194, 41.595756, 300);
@@ -248,6 +254,7 @@ export default {
           );
           break;
         }
+
         case "2-1": {
           // 天气特效
           // param 	string 	是 	‘sun’：晴天
@@ -300,27 +307,71 @@ export default {
           if (!_isshow) {
             //范围
             // eslint-disable-next-line no-undef
-            let _bboxBounds = new bounds(-2300000, 2300000, 2300000, -2300000);
-            // eslint-disable-next-line no-undef
-            let _bbox = new bounds(-800000, 800000, 800000, -800000);
-            //点半径
-            let tempRadius = 50000;
+            let _bboxBounds = new bounds(-200000, 200000, 200000, -200000);
+            let point1 = WGSConvert.WGS84ToVector3ForM(119.263825,40.973412,0);
+            let point2 = WGSConvert.WGS84ToVector3ForM(119.768588,41.137406,0);
+            let point3 = WGSConvert.WGS84ToVector3ForM(120.288061,41.562769,0);
+            let point4 = WGSConvert.WGS84ToVector3ForM(120.54041, 41.580751,0)
+            let point5 = WGSConvert.WGS84ToVector3ForM(120.292492,41.351644,0);
+            let point6 = WGSConvert.WGS84ToVector3ForM(120.80763, 41.861484,0);
+            let point7 = WGSConvert.WGS84ToVector3ForM(119.625446,41.836241,0);
             //随机生成数据点
-            let dataRaw = [];
-            for (let i = 0; i < 200; i++) {
-              let point = {
-                x: _bbox.west + Math.random() * (_bbox.east - _bbox.west),
-                y: _bbox.north + Math.random() * (_bbox.south - _bbox.north),
-                value: 1,
-                radius: tempRadius,
-              };
-              dataRaw.push(point);
-            }
+            let dataRaw = [
+              {
+                x: point1.x,
+                y: point1.y,
+                // value: 0.189504,
+                value: 0.7,
+                radius: 50000,
+              },
+              {
+                x: point2.x,
+                y: point2.y,
+                // value: 0.125364,
+                value: 0.7,
+                radius: 50000,
+              },
+              {
+                x: point3.x,
+                y: point3.y,
+                // value: 0.166181,
+                value: 0.7,
+                radius: 50000,
+              },
+              {
+                x: point4.x,
+                y: point4.y,
+                // value: 0.061224,
+                value: 0.7,
+                radius: 50000,
+              },
+              {
+                x: point5.x,
+                y: point5.y,
+                // value: 0.113703,
+                value: 0.7,
+                radius: 50000,
+              },
+              {
+                x: point5.x,
+                y: point5.y,
+                // value: 0.169096,
+                value: 0.7,
+                radius: 50000,
+              },
+              {
+                x: point6.x,
+                y: point6.y, 
+                value: 0.7,
+                radius: 50000,
+              },
+            ]; 
             let param = {
               id: new Date().getTime().toString(),
-              class: "mode3D", //"normal": 普通热力图，"mode3D":3D热力图， "pointCloud":点云热力图
+              // class: "mode3D", //"normal": 普通热力图，"mode3D":3D热力图， "pointCloud":点云热力图
               bbox: _bboxBounds, //热力图覆盖区域边界，ue4坐标，（西，东，南，北）
-              height: 1000, //热力图整体高度
+              // height: -670000, //热力图整体高度
+              height: -660000, //热力图整体高度
               data: dataRaw,
             };
             effectObj = ue4api.ObjectFactory.createHeatmap(param);
@@ -438,13 +489,15 @@ export default {
         case "3-2": {
           // 添加POI点
           // var jsonPath = "http://192.168.1.106:5500/data/poi点数据-民计民生/学校/小学.json";
-          //  var imageSrc = Config.BASE_URL() + '/images/project/camera.png';
+          // var imageSrc = Config.BASE_URL() + '/img/camera.png';
+          // var imageSrc = Config.BASE_URL() + "/images/project/camera.png";
           var imageSrc =
             "https://i.52112.com/icon/jpg/256/20201203/102093/4136590.jpg";
+          //  var imageSrc = "http://172.19.17.225:88/data/img/camera.png";
           // eslint-disable-next-line no-redeclare
           var jsonPath =
-            Config.BASE_URL() + "/data/poi点数据-民计民生/学校/小学.json";
-          // var imageSrc = Config.BASE_URL() + '/images/project/camera.png';
+            Config.BASE_URL() + "data/poi点数据-民计民生/学校/小学.json";
+
           console.log(imageSrc);
           ue4se.LoadImagesByJSON(jsonPath, imageSrc);
           break;
@@ -461,8 +514,8 @@ export default {
         case "3-4": {
           // 滨海poi点测试
           var jsonPath =
-            Config.BASE_URL() + "/data/poi点数据-民计民生/滨海/poi.json";
-          var imageSrc = Config.BASE_URL() + "/images/project/camera.png";
+            Config.BASE_URL() + "data/poi点数据-民计民生/滨海/poi.json";
+          var imageSrc = Config.BASE_URL() + "images/project/camera.png";
           console.log(imageSrc);
           ue4se.LoadPOIByJSON(jsonPath, imageSrc);
           break;
@@ -807,28 +860,28 @@ export default {
 
         case "8-1": {
           //实景区域镜头
-          ue4api.factory.CallEvent("SetPawn", 1);
+          ue4api.factory.CallEvent("SetPwan", 0);
           break;
         }
 
         case "8-2": {
           //全国行政区域镜头
-          ue4api.factory.CallEvent("SetPawn", 2);
+          ue4api.factory.CallEvent("SetPwan", 1);
           break;
         }
         case "8-3": {
           //经济圈区域镜头）
-          ue4api.factory.CallEvent("SetPawn", 3);
+          ue4api.factory.CallEvent("SetPwan", 2);
           break;
         }
         case "8-4": {
           //朝阳行政区划区域镜头
-          ue4api.factory.CallEvent("SetPawn", 4);
+          ue4api.factory.CallEvent("SetPwan", 3);
           break;
         }
         case "8-5": {
           //规划数据区域镜头
-          ue4api.factory.CallEvent("SetPawn", 5);
+          ue4api.factory.CallEvent("SetPwan", 4);
           break;
         }
         case "9-1": {
@@ -852,10 +905,30 @@ export default {
           ue4api.factory.CallEvent("Leveldajubu", 0);
           break;
         }
+        case "10-1": {
+          var jsonPath = Config.BASE_URL() + "data/克拉玛依/井盖.json";
+          console.log(jsonPath);
+          // eslint-disable-next-line no-unused-vars
+          var objMap = ue4se.LoadLabelByJSONWithoutWGS(jsonPath);
+
+          break;
+        }
         default:
           break;
       }
     },
+  },
+  mounted: function () {
+    //初始化UE4api类
+    // eslint-disable-next-line no-undef
+    ue4api = new ue4api_xz("uePage");
+    ue4api.measure.PickPosition(function (e) {
+      debugger;
+      console.info(e); //点选的点位信息
+      //其中e.clickType做为单击事件，还是双击事件的判断
+      //当单击点选时，e.clickType = 1
+      //当双击点选时，e.clickType = 2
+    });
   },
 };
 </script>
