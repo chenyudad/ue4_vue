@@ -625,8 +625,10 @@ export default {
         }
         case "3-2": {
           // 添加POI点
-          var imageSrc =
-            "https://i.52112.com/icon/jpg/256/20201203/102093/4136590.jpg";
+          // var imageSrc =
+            // "https://i.52112.com/icon/jpg/256/20201203/102093/4136590.jpg";
+            var imageSrc =
+            "https://d.lanrentuku.com/down/png/1904/food-icons-const/waffles.png";
           // var jsonPath =
           //   Config.BASE_URL() + "/data/poi点数据-民计民生/学校/小学.json";
           // ue4se.LoadImagesByJSON(jsonPath, imageSrc);
