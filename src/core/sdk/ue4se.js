@@ -1,16 +1,26 @@
-import WGSConvert from "./TransformAxis/WGSConvert.js"; 
+import WGSConvert from "../TransformAxis/WGSConvert.js";
+import {
+    Vector2,
+    Vector3,
+    Rotator,
+    Color,
+    DefaultColor,
+    bounds,
+}
+from "./ueObj";
+import ue4apixz from "./ue4api-xz";
 import axios from 'axios';
 let ue4se = {
     // CreateLabel
     LoadLabelByJSON: function (JSONPath) {
         let objMap = new Map();
         // eslint-disable-next-line no-undef
-        let ue4api = new ue4api_xz('uePage');
+
+        let ue4api = new ue4apixz();
         let vector3Tmp = null;
         let _id = null; 
         // eslint-disable-next-line no-undef
-        axios.get(JSONPath, {
-            }).then(function (response) {
+        axios.get(JSONPath, {}).then(function (response) {
             // console.info(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config));
             if (response.statusText == "OK") {
                 let _pois = response.data.pois;
@@ -34,7 +44,7 @@ let ue4se = {
                         size: new Vector2(380, 180), //label的大小
                         text: element.name, //显示的文字
                         scale: 1, //缩放
-                        type: 'Default', //可选字符串参数：Default,Type1,Type2
+                        type: 'Type1', //可选字符串参数：Default,Type1,Type2
                         // eslint-disable-next-line no-undef
                         backgroundColor: new Color(0.266356, 0.467784, 0.021219, 1), //文字框背景色
                         // eslint-disable-next-line no-undef
@@ -43,25 +53,22 @@ let ue4se = {
                         distanceDisplayCondition: new Vector2(), //预留字段
                         visibility: true //默认是否显示
                     }
-                    console.table(param.location);
+                    // console.table(param.location);
                     let obj = ue4api.ObjectFactory.CreateLabel(param);
                     objMap.set(_id, obj);
                 });
                 return objMap;
             }
-        }).catch(function (error) {
-            debugger;
+        }).catch(function (error) { 
         });
     },
     ///Billboard图层接口
     LoadImagesByJSON: function (JSONPath, imageSrc) {
 
-        // eslint-disable-next-line no-undef
-        let ue4api = new ue4api_xz('uePage');
+        let ue4api = new ue4apixz( );
         let objMap = new Map();
         let vector3Tmp = null;
-        let _id = null;
-        // eslint-disable-next-line no-undef
+        let _id = null;  
         axios.get(JSONPath, {}).then(function (response) {
             // console.info(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config));
             if (response.statusText == "OK") {
@@ -85,9 +92,9 @@ let ue4se = {
                         clickedScale: 0.7,
                         visibility: true, //默认是否显示
                         alertWindow: { //可选，点击弹窗 
-                           /// url: "http://192.168.1.106:5500/item2.html?_id=" + element.name, //弹窗地址
-                        //    url: "http://192.168.1.106:5500/item2.html?_id=" + element.name, //弹窗地址
-                        url: 'http://www.baidu.com',
+                            /// url: "http://192.168.1.106:5500/item2.html?_id=" + element.name, //弹窗地址
+                            //    url: "http://192.168.1.106:5500/item2.html?_id=" + element.name, //弹窗地址
+                            url: 'http://www.baidu.com',
                             // eslint-disable-next-line no-undef
                             size: new Vector2(580, 190), //弹窗大小
                             // eslint-disable-next-line no-undef
@@ -99,21 +106,21 @@ let ue4se = {
                 });
                 return objMap;
             }
-        }).catch(function (error) {
+        }).catch(function (error) { 
         });
     },
     ///Billboard图层接口
     LoadPOIByJSON: function (JSONPath, imageSrc) {
 
         // eslint-disable-next-line no-undef
-        let ue4api = new ue4api_xz('uePage');
+        let ue4api = new ue4apixz( );
         let objMap = new Map();
         let vector3Tmp = null;
         let _id = null;
         // eslint-disable-next-line no-undef
         axios.get(JSONPath, {}).then(function (response) {
             // console.info(''.concat(response.data, '\r\n', response.status, '\r\n', response.statusText, '\r\n', response.headers, '\r\n', response.config));
-            if (response.statusText == "OK") { 
+            if (response.statusText == "OK") {
                 var _pois = response.data.RECORDS;
                 _pois.forEach(function (element, index) {
                     console.info(element.名称);
@@ -147,15 +154,13 @@ let ue4se = {
                 });
                 return objMap;
             }
-        }).catch(function (error) {
-        });
-    }
-    ,
-     // CreateLabel
-     LoadLabelByJSONWithoutWGS: function (JSONPath) {
+        }).catch(function (error) {});
+    },
+    // CreateLabel
+    LoadLabelByJSONWithoutWGS: function (JSONPath) {
         let objMap = new Map();
         // eslint-disable-next-line no-undef
-        let ue4api = new ue4api_xz('uePage');
+        let ue4api = new ue4apixz();
         let vector3Tmp = null;
         let _id = null;
         // eslint-disable-next-line no-undef
@@ -198,8 +203,7 @@ let ue4se = {
                 });
                 return objMap;
             }
-        }).catch(function (error) {
-        });
+        }).catch(function (error) {});
     },
 }
 export default ue4se;

@@ -1,4 +1,9 @@
 import LocalAndWorldTransform from "./TransMatrix.js";
+import  {
+        Vector2,
+        Vector3
+    }
+    from "../sdk/ueObj";
 
 let WGSConvert = {
 

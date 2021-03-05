@@ -1,43 +1,119 @@
-/*
- * 注意：传UE4的参数，单位都是厘米
- *
- */
-//镜头属性
-let _camera = {
-    location: {}, //镜头坐标
-    rotation: {}, //镜头角度
-    distance: '', //镜头到屏幕中心点地面的距离
-    FlyTo: '', //平移到定点
-    setView: '', //设置镜头到定点
-    rotate: '', //按屏幕中心的地面为中心，旋转
-    cancelFlight: '', //取消平移
-    focusOn: {} //屏幕中心聚焦到定点，需传入镜头到中心点距离
+import {
+    Vector2,
+    Vector3,
+    Rotator,
+    Color,
+    DefaultColor,
+    bounds,
 }
-var objectXZ = function (_id) {
-    this.id = _id;
-    this.category = '';
-    this.removeFromMap = function () {}
-    // eslint-disable-next-line no-unused-vars
-    this.show = function (_param) {}
-    this.deleteObject = '';
-    this.beginPatrol = '';
-    this.stopPatrol = '';
-}
-//回调临时变量
-let callBackTemp = '';
-let callBackPick = '';
-// let callBackPickID = '';
-//api 类
-// eslint-disable-next-line no-unused-vars
-var ue4api_xz = function (ue4frameId) {
-    let xz = document.getElementById(ue4frameId).contentWindow;
+from "./ueObj";
+import objectXZ from "./objectXZ";
+class ue4apixz { 
+    constructor() {
+        //api 类  
+        window.iframeCw = document.getElementById("uePage").contentWindow;
+    };
+    /*
+     * 注意：传UE4的参数，单位都是厘米
+     *
+     */
+    //镜头属性  
+    _camera = {
+        location: {}, //镜头坐标
+        rotation: {}, //镜头角度
+        distance: '', //镜头到屏幕中心点地面的距离
+        FlyTo: '', //平移到定点
+        setView: '', //设置镜头到定点
+        rotate: '', //按屏幕中心的地面为中心，旋转
+        cancelFlight: '', //取消平移
+        focusOn: {} //屏幕中心聚焦到定点，需传入镜头到中心点距离
+    };
 
-    this.camera = _camera;
-    let sendJson;
-    //callBackTemp = '';
-    this.camera = {
+    callBackTemp = ''; //回调临时变量
+    callBackPick = '';
+    mainPage (){ 
+        console.info("===========<<<<<<<<场景已连接>>>>>>>>===========");
+    };
+    init() {
+        let isfirstload=true;
+        //监听事件
+        window.addEventListener('message', e => {
+            //镜头位置，实时更新
+            if (e.data.callBack === "CameraInfo") {
+                this._camera.location = e.data.camera.location;
+                this._camera.rotation = e.data.camera.rotation;
+                this._camera.distance = e.data.camera.distance;
+                //显示到页面
+                if (document.getElementById('cameraInfo') !== null) {
+                    document.getElementById('cameraInfo').innerHTML = JSON.stringify(e.data.camera.location);
+                }
+                if (document.getElementById('pointer') !== null) {
+                    document.getElementById('pointer').style.transform = "rotate(" + this._camera.rotation.yaw + "deg)";
+                }
+            }
+            //回调函数
+            if (e.data.callBack === "CallBackOneParam") {
+                //鼠标拾取回调，带参
+                if (e.data.customStr === 'pickWidget' && this.callBackPick !== '') {
+                    this.callBackPick(e.data.info);
+                }
+                // else if(e.data.customStr === 'pickID' && callBackPickID !== '') {
+                //     callBackPickID(e.data.info);
+                // }
+                else if (this.callBackTemp !== '') {
+                    //其他带参回调
+                    this.callBackTemp(e.data.info);
+                }
+            } else if (e.data.callBack === "CallBackNoParam") {
+
+                if (e.data.customStr === "connected" && typeof mainPage === 'function') {
+
+
+                } else if (e.data.customStr === "wsDisConnect" && typeof closedPage === 'function') {
+
+                    closedPage();
+                } else if (e.data.customStr === "WorldBegin" && typeof beginWorld === 'function') {
+
+                    beginWorld();
+                } else if (isfirstload && (e.data.customStr === "StartLoadLevelYes" || e.data.customStr === "Restart")) {
+                    isfirstload = !isfirstload;
+                    this.mainPage(); 
+                }
+
+            } 
+        });
+    };
+
+    measure = {
+        PickPosition: function (_callBack) {
+            let sendJson = {
+                namespace: 'measure',
+                type: 'PickPosition'
+            };
+            this.callBackPick = _callBack;
+            iframeCw.postMessage(sendJson, '*');
+        },
+        PickObject: function (_callBack) {
+            let sendJson = {
+                namespace: 'measure',
+                type: 'PickObject'
+            };
+            this.callBackPick = _callBack;
+            iframeCw.postMessage(sendJson, '*');
+        },
+        PickComponent: function (_callBack) {
+            let sendJson = {
+                namespace: 'measure',
+                type: 'PickComponent'
+            };
+            this.callBackPick = _callBack;
+            iframeCw.postMessage(sendJson, '*');
+        }
+    };
+    camera = {
         FlyTo: function (_x, _y, _z, _roll, _pitch, _yaw, _callBack, _time = 2) {
-            sendJson = {
+
+            let sendJson = {
                 namespace: 'camera',
                 type: 'FlyTo',
                 x: _x,
@@ -48,11 +124,11 @@ var ue4api_xz = function (ue4frameId) {
                 yaw: _yaw,
                 time: _time
             };
-            callBackTemp = _callBack;
-            xz.postMessage(sendJson, '*');
+            this.callBackTemp = _callBack;
+            iframeCw.postMessage(sendJson, '*');
         },
         setView: function (_options) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'camera',
                 type: 'setView',
                 param: {
@@ -60,10 +136,10 @@ var ue4api_xz = function (ue4frameId) {
                     rotation: _options.orientation
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         rotate: function (_time, _degrees, _callBack) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'camera',
                 type: 'rotate',
                 param: {
@@ -71,19 +147,19 @@ var ue4api_xz = function (ue4frameId) {
                     degrees: _degrees
                 }
             };
-            callBackTemp = _callBack;
-            xz.postMessage(sendJson, '*');
+            this.callBackTemp = _callBack;
+            iframeCw.postMessage(sendJson, '*');
         },
         cancelFlight: function () {
-            sendJson = {
+            let sendJson = {
                 namespace: 'camera',
                 type: 'cancelFlight',
                 param: ''
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         focusOn: function (_location, _rotation, _distance, _callBack, _time = 1) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'camera',
                 type: 'focusOn',
                 param: {
@@ -93,15 +169,13 @@ var ue4api_xz = function (ue4frameId) {
                     time: _time
                 }
             };
-            callBackTemp = _callBack;
-            console.log(sendJson);
-            xz.postMessage(sendJson, '*');
+            this.callBackTemp = _callBack;
+            iframeCw.postMessage(sendJson, '*');
         }
     };
-
-    //
-    this.environment = {
+    environment = {
         ShowEffect: function (_param) {
+            let sendJson = "";
             //夜晚
             if (_param === 'morning' || _param === 'noon' ||
                 _param === 'evening' || _param === 'night') {
@@ -125,11 +199,12 @@ var ue4api_xz = function (ue4frameId) {
                     param: true
                 };
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         DisableEffect: function (_param) {
             //取消夜晚就是中午
             //为了把暴露接口和cesium一致
+            let sendJson = "";
             if (_param === 'night' || _param === 'morning' ||
                 _param === 'evening') {
                 sendJson = {
@@ -154,106 +229,79 @@ var ue4api_xz = function (ue4frameId) {
                     param: false
                 };
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         SpecificTime: function (_param) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'environment',
                 type: 'SpecificTime',
                 param: {
                     time: _param
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         CycleDayTime: function (_duration = 15) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'environment',
                 type: 'CycleDayTime',
                 param: {
                     duration: _duration
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         setTime: function (_param) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'environment',
                 type: 'SetTime',
                 param: _param
             };
 
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         setWeather: function (_param) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'environment',
                 type: 'setWeather',
                 param: _param
             };
 
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         SetTimeInit: function (_param) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'environment',
                 type: 'SetTimeInit',
                 param: _param
             };
 
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         SetWeatherInit: function (_param) {
-            sendJson = {
+            let sendJson = {
                 namespace: 'environment',
                 type: 'SetWeatherInit',
                 param: _param
             };
 
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         }
 
     };
-    //
-    this.measure = {
-        PickPosition: function (_callBack) {
-            let sendJson = {
-                namespace: 'measure',
-                type: 'PickPosition'
-            };
-            callBackPick = _callBack;
-            xz.postMessage(sendJson, '*');
-        },
-        PickObject: function (_callBack) {
-            let sendJson = {
-                namespace: 'measure',
-                type: 'PickObject'
-            };
-            callBackPick = _callBack;
-            xz.postMessage(sendJson, '*');
-        },
-        PickComponent: function (_callBack) {
-            let sendJson = {
-                namespace: 'measure',
-                type: 'PickComponent'
-            };
-            callBackPick = _callBack;
-            xz.postMessage(sendJson, '*');
-        }
-    };
-    this.scene = {
+
+    scene = {
         pointEffect: function (_param) {
             let sendJson = {
                 namespace: 'scene',
                 type: 'pointEffect',
                 param: _param
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         }
 
     };
-    //
-    this.ObjectFactory = {
+    ObjectFactory = {
         CreateBillboard: function (_param) {
             _param.category = 'billboard';
             let sendJson = {
@@ -261,15 +309,25 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateBillboard',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
+            var obj = new objectXZ(_param._id);
             obj.category = 'billboard';
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveBillboard',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -287,9 +345,9 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         CreateLabel: function (_param) {
@@ -299,15 +357,26 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateLabel',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+
+            
+            var obj = new objectXZ(_param._id);
             obj.category = 'label';
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveLabel',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -325,10 +394,10 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             //
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         //
@@ -338,14 +407,23 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'createHeatmap',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveHeatmap',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -363,7 +441,7 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.update = function () {
                 let sendJson = {
@@ -371,9 +449,9 @@ var ue4api_xz = function (ue4frameId) {
                     type: 'updateHeatmap',
                     param: this.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         //
@@ -383,14 +461,23 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateGrid',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveGrid',
-                    param: this.id
+                    param: id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -408,9 +495,9 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         CreatePolyline: function (_param) {
@@ -419,14 +506,23 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'AddPath',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemovePath',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -444,9 +540,9 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         CreateMigrationMap: function (_param) {
@@ -455,14 +551,23 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'AddMigrationMap',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveMigrationMap',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -480,9 +585,9 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         createFeatureLayer: function (_param) {
@@ -491,16 +596,26 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateCluster',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveCluster',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         CreateAreaData: function (_param) {
@@ -509,14 +624,23 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateAreaData',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveAreaData',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -534,9 +658,9 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         CreateCircleArea: function (_param) {
@@ -545,16 +669,26 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateCircleArea',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveAreaData',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         CreateCluster: function (_param = "") {
@@ -564,7 +698,7 @@ var ue4api_xz = function (ue4frameId) {
                 param: _param
             };
 
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         RemoveCluster: function () {
             let sendJson = {
@@ -572,7 +706,7 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'RemoveCluster',
                 param: ""
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         CreateEffectPoint: function (_param) {
             let sendJson = {
@@ -580,16 +714,26 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateEffectPoint',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveEffectPoint',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         createAreaBoundary: function (_param) {
@@ -598,22 +742,31 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'createAreaBoundary',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'ObjectFactory',
                     type: 'RemoveAreaBoundary',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         }
 
-    };
-    ////
-    this.factory = {
+    }
+    factory = {
         //
         CallEvent: function (_eventName, _param = "") {
             let sendJson = {
@@ -622,7 +775,7 @@ var ue4api_xz = function (ue4frameId) {
                 eventName: _eventName,
                 param: _param
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         setRes: function (_width, _height) {
             let sendJson = {
@@ -633,7 +786,7 @@ var ue4api_xz = function (ue4frameId) {
                     height: parseInt(_height)
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         //
         FlyToCity: function () {
@@ -644,7 +797,7 @@ var ue4api_xz = function (ue4frameId) {
                     rotation: new Rotator(0, -25, 155)
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         //
         ReStartWorld: function () {
@@ -652,7 +805,7 @@ var ue4api_xz = function (ue4frameId) {
                 namespace: 'factory',
                 type: 'ReStartWorld'
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         //
         CreatePatrolLine: function (_param) {
@@ -661,14 +814,23 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreatePatrolLine',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'factory',
                     type: 'RemovePatrol',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.beginPatrol = function (_param) {
                 let sendJson = {
@@ -681,7 +843,7 @@ var ue4api_xz = function (ue4frameId) {
                     }
                 };
 
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.stopPatrol = function (_param) {
                 let sendJson = {
@@ -694,9 +856,9 @@ var ue4api_xz = function (ue4frameId) {
                     }
                 };
 
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         //
@@ -706,14 +868,24 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateGroupBar',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'factory',
                     type: 'RemoveGroupBar',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             // obj.show = function(_param) {
             //     let sendJson;
@@ -731,9 +903,9 @@ var ue4api_xz = function (ue4frameId) {
             //         };
             //
             //     }
-            //     xz.postMessage(sendJson,'*');
+            //    iframeCw.postMessage(sendJson,'*');
             // }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         CreateTextTwoImg: function (_param) {
@@ -742,16 +914,25 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'CreateTextTwoImg',
                 param: _param
             };
-            var obj = new objectXZ(_param.id);
+            // var obj = {
+            //     id: _param._id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'factory',
                     type: 'RemoveTextTwoImg',
-                    param: this.id
+                    param: _param.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         //音频
@@ -763,7 +944,7 @@ var ue4api_xz = function (ue4frameId) {
                     soundFileName: _param
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         setAudioSwitch: function (_param) {
             let sendJson = {
@@ -773,7 +954,7 @@ var ue4api_xz = function (ue4frameId) {
                     soundSwitch: _param
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         setAudioVolume: function (_param) {
             let sendJson = {
@@ -783,7 +964,7 @@ var ue4api_xz = function (ue4frameId) {
                     soundVolume: _param
                 }
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         },
         DoubleRendering: function (_param) {
             let sendJson = {
@@ -791,7 +972,7 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'DoubleRendering',
                 param: _param
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         }
         // ,ScreenShot : function (_param = 1) {
         //     let sendJson = {
@@ -801,11 +982,10 @@ var ue4api_xz = function (ue4frameId) {
         //             Multiplier : _param
         //         }
         //     };
-        //     xz.postMessage(sendJson,'*');
+        //    iframeCw.postMessage(sendJson,'*');
         // }
     };
-    //
-    this.View = {
+    View = {
         //三维柱状图
         CreateStatisticCylinder: function (option) {
             let sendJson = {
@@ -813,14 +993,24 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'Create3DBar',
                 param: option
             };
+            // var obj = {
+            //     id: option.id,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
             var obj = new objectXZ(option.id);
             obj.removeFromMap = function () {
                 let sendJson = {
                     namespace: 'View',
                     type: 'Remove3DBar',
-                    param: this.id
+                    param: option.id
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
             obj.show = function (_param) {
                 let sendJson;
@@ -838,22 +1028,21 @@ var ue4api_xz = function (ue4frameId) {
                     };
 
                 }
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         }
     };
-    //
-    this.SelectTool = {
+    SelectTool = {
         select: function (_callBack) {
             let sendJson = {
                 namespace: 'SelectTool',
                 type: 'select',
                 param: true
             };
-            callBackTemp = _callBack;
-            xz.postMessage(sendJson, '*');
+            this.callBackTemp = _callBack;
+            iframeCw.postMessage(sendJson, '*');
         },
         disSelect: function () {
             let sendJson = {
@@ -861,11 +1050,10 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'select',
                 param: false
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         }
     };
-    //
-    this.analysis = {
+    analysis = {
         getDistanceHorizontal: function (_callBack) {
             var randomId = new Date().getTime().toString();
             let sendJson = {
@@ -873,6 +1061,17 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'AddMeasure',
                 param: randomId
             };
+            // var obj = {
+            //     id: randomId,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+
+            
             var obj = new objectXZ(randomId);
             obj.deleteObject = function () {
                 sendJson = {
@@ -880,10 +1079,10 @@ var ue4api_xz = function (ue4frameId) {
                     type: 'RemoveMeasure',
                     param: obj.id
                 };
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            callBackTemp = _callBack;
-            xz.postMessage(sendJson, '*');
+            this.callBackTemp = _callBack;
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         getPlaneArea: function (_callBack) {
@@ -893,6 +1092,16 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'AddPlaneArea',
                 param: randomId
             };
+            // var obj = {
+            //     id: randomId,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
             var obj = new objectXZ(randomId);
             obj.deleteObject = function () {
                 sendJson = {
@@ -900,10 +1109,10 @@ var ue4api_xz = function (ue4frameId) {
                     type: 'RemovePlaneArea',
                     param: obj.id
                 };
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            callBackTemp = _callBack;
-            xz.postMessage(sendJson, '*');
+            this.callBackTemp = _callBack;
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         },
         getMeasureHeight: function (_callBack) {
@@ -913,6 +1122,16 @@ var ue4api_xz = function (ue4frameId) {
                 type: 'AddMeasureHeight',
                 param: randomId
             };
+            // var obj = {
+            //     id: randomId,
+            //     category: '',
+            //     removeFromMap: function () {},
+            //     show: function (_param) {},
+            //     deleteObject: '',
+            //     beginPatrol: '',
+            //     stopPatrol: ''
+            // };
+            
             var obj = new objectXZ(randomId);
             obj.deleteObject = function () {
                 sendJson = {
@@ -920,191 +1139,26 @@ var ue4api_xz = function (ue4frameId) {
                     type: 'RemoveMeasureHeight',
                     param: obj.id
                 };
-                xz.postMessage(sendJson, '*');
+                iframeCw.postMessage(sendJson, '*');
             }
-            callBackTemp = _callBack;
-            xz.postMessage(sendJson, '*');
+            this.callBackTemp = _callBack;
+            iframeCw.postMessage(sendJson, '*');
             return obj;
         }
 
 
     };
-    this.Command = {
+    Command = {
         Exec: function (namespace, type, value) {
             let sendJson = {
                 namespace: namespace,
                 type: type,
                 value: value
             };
-            xz.postMessage(sendJson, '*');
+            iframeCw.postMessage(sendJson, '*');
         }
     };
-};
 
-// eslint-disable-next-line no-unused-vars
-var Vector3 = function (_x = 0, _y = 0, _z = 0) {
-    return {
-        x: _x,
-        y: _y,
-        z: _z
-    };
 }
 
-// eslint-disable-next-line no-unused-vars
-var Vector2 = function (_x = 0, _y = 0) {
-    return {
-        x: _x,
-        y: _y
-    };
-}
-
-// Pitch：沿着Y轴旋转；
-// Roll：沿着X轴旋转；
-// Yaw：沿着Z轴旋转；
-var Rotator = function (_roll = 0, _pitch = 0, _yaw = 0) {
-    return {
-        roll: _roll,
-        pitch: _pitch,
-        yaw: _yaw
-    };
-}
-
-// eslint-disable-next-line no-unused-vars
-var Color = function (_R = 1, _G = 1, _B = 1, _A = 1) {
-    return {
-        r: _R,
-        g: _G,
-        b: _B,
-        a: _A
-    }
-}
-
-// eslint-disable-next-line no-unused-vars
-var DefaultColor = {
-    red: {
-        r: 1,
-        g: 0,
-        b: 0,
-        a: 1
-    },
-    green: {
-        r: 0,
-        g: 1,
-        b: 0,
-        a: 1
-    },
-    blue: {
-        r: 0,
-        g: 0,
-        b: 1,
-        a: 1
-    },
-    yellow: {
-        r: 1,
-        g: 1,
-        b: 0,
-        a: 1
-    },
-    purple: {
-        r: 1,
-        g: 0,
-        b: 1,
-        a: 1
-    },
-    cyan: {
-        r: 0,
-        g: 1,
-        b: 1,
-        a: 1
-    },
-    black: {
-        r: 0,
-        g: 0,
-        b: 0,
-        a: 1
-    },
-    white: {
-        r: 1,
-        g: 1,
-        b: 1,
-        a: 1
-    },
-    gray: {
-        r: 0.5,
-        g: 0.5,
-        b: 0.5,
-        a: 1
-    }
-}
-/*
-        n
-*       |
-*       |
-* w—————|————→e
-*       |
-*       ↓
-*       s
-* 单位：厘米
-*/
-// eslint-disable-next-line no-unused-vars
-var bounds = function (w = -10000, e = 10000, s = 10000, n = -10000) {
-    return {
-        west: w,
-        east: e,
-        south: s,
-        north: n
-    };
-}
-function    mainPage(){
-
-    console.log("===========>>>>><<<<<===========");
-}
-//监听事件
-addEventListener('message', e => { 
-    console.info(e.data);
-    //镜头位置，实时更新
-    if (e.data.callBack === "CameraInfo") {
-        _camera.location = e.data.camera.location;
-        _camera.rotation = e.data.camera.rotation;
-        _camera.distance = e.data.camera.distance;
-        //显示到页面
-        if (document.getElementById('cameraInfo') !== null) {
-            document.getElementById('cameraInfo').innerHTML = JSON.stringify(e.data.camera.location);
-        }
-        if (document.getElementById('pointer') !== null) {
-            document.getElementById('pointer').style.transform = "rotate(" + _camera.rotation.yaw + "deg)";
-        }
-    }
-    //回调函数
-    if (e.data.callBack === "CallBackOneParam") {
-        //鼠标拾取回调，带参
-        if (e.data.customStr === 'pickWidget' && callBackPick !== '') {
-            callBackPick(e.data.info);
-        }
-        // else if(e.data.customStr === 'pickID' && callBackPickID !== '') {
-        //     callBackPickID(e.data.info);
-        // }
-        else if (callBackTemp !== '') {
-            //其他带参回调
-            callBackTemp(e.data.info);
-        }
-    } else if (e.data.callBack === "CallBackNoParam") {
-        if (e.data.customStr === "connected" && typeof mainPage === 'function') {
-            // eslint-disable-next-line no-undef
-            mainPage();
-        } else if (e.data.customStr === "wsDisConnect" && typeof closedPage === 'function') {
-            // eslint-disable-next-line no-undef
-            closedPage();
-        } else if (e.data.customStr === "WorldBegin" && typeof beginWorld === 'function') {
-            // eslint-disable-next-line no-undef
-            beginWorld();
-        } else if (callBackTemp !== '') {
-            //无参回调
-            callBackTemp();
-        }
-    }
-    else if (e.data.data == undefined) {
-         mainPage();
-
-    }
-});
+export default ue4apixz; 
