@@ -8,7 +8,7 @@ import {
 }
 from "./ueObj";
 import objectXZ from "./objectXZ";
-class ue4apixz { 
+class ue4apixz {
     constructor() {
         //api 类  
         window.iframeCw = document.getElementById("uePage").contentWindow;
@@ -31,11 +31,11 @@ class ue4apixz {
 
     callBackTemp = ''; //回调临时变量
     callBackPick = '';
-    mainPage (){ 
+    mainPage() {
         console.info("===========<<<<<<<<场景已连接>>>>>>>>===========");
     };
     init() {
-        let isfirstload=true;
+        let isfirstload = true;
         //监听事件
         window.addEventListener('message', e => {
             //镜头位置，实时更新
@@ -56,11 +56,7 @@ class ue4apixz {
                 //鼠标拾取回调，带参
                 if (e.data.customStr === 'pickWidget' && this.callBackPick !== '') {
                     this.callBackPick(e.data.info);
-                }
-                // else if(e.data.customStr === 'pickID' && callBackPickID !== '') {
-                //     callBackPickID(e.data.info);
-                // }
-                else if (this.callBackTemp !== '') {
+                } else if (this.callBackTemp !== '') {
                     //其他带参回调
                     this.callBackTemp(e.data.info);
                 }
@@ -68,19 +64,17 @@ class ue4apixz {
 
                 if (e.data.customStr === "connected" && typeof mainPage === 'function') {
 
-
-                } else if (e.data.customStr === "wsDisConnect" && typeof closedPage === 'function') {
-
+                } 
+                else if (e.data.customStr === "wsDisConnect" && typeof closedPage === 'function') {
                     closedPage();
                 } else if (e.data.customStr === "WorldBegin" && typeof beginWorld === 'function') {
-
                     beginWorld();
                 } else if (isfirstload && (e.data.customStr === "StartLoadLevelYes" || e.data.customStr === "Restart")) {
                     isfirstload = !isfirstload;
-                    this.mainPage(); 
+                    this.mainPage();
                 }
 
-            } 
+            }
         });
     };
 
@@ -309,16 +303,7 @@ class ue4apixz {
                 type: 'CreateBillboard',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(_param._id);
             obj.category = 'billboard';
             obj.removeFromMap = function () {
@@ -357,17 +342,7 @@ class ue4apixz {
                 type: 'CreateLabel',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
 
-            
             var obj = new objectXZ(_param._id);
             obj.category = 'label';
             obj.removeFromMap = function () {
@@ -407,15 +382,7 @@ class ue4apixz {
                 type: 'createHeatmap',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -461,15 +428,7 @@ class ue4apixz {
                 type: 'CreateGrid',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -506,15 +465,7 @@ class ue4apixz {
                 type: 'AddPath',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -551,15 +502,7 @@ class ue4apixz {
                 type: 'AddMigrationMap',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -596,16 +539,7 @@ class ue4apixz {
                 type: 'CreateCluster',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -624,15 +558,7 @@ class ue4apixz {
                 type: 'CreateAreaData',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -669,16 +595,8 @@ class ue4apixz {
                 type: 'CreateCircleArea',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -714,16 +632,7 @@ class ue4apixz {
                 type: 'CreateEffectPoint',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -742,16 +651,7 @@ class ue4apixz {
                 type: 'createAreaBoundary',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -814,15 +714,7 @@ class ue4apixz {
                 type: 'CreatePatrolLine',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -868,16 +760,7 @@ class ue4apixz {
                 type: 'CreateGroupBar',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -914,15 +797,7 @@ class ue4apixz {
                 type: 'CreateTextTwoImg',
                 param: _param
             };
-            // var obj = {
-            //     id: _param._id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
+
             var obj = new objectXZ(_param._id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -974,16 +849,7 @@ class ue4apixz {
             };
             iframeCw.postMessage(sendJson, '*');
         }
-        // ,ScreenShot : function (_param = 1) {
-        //     let sendJson = {
-        //         namespace : 'factory',
-        //         type : 'ScreenShot',
-        //         param: {
-        //             Multiplier : _param
-        //         }
-        //     };
-        //    iframeCw.postMessage(sendJson,'*');
-        // }
+
     };
     View = {
         //三维柱状图
@@ -993,16 +859,7 @@ class ue4apixz {
                 type: 'Create3DBar',
                 param: option
             };
-            // var obj = {
-            //     id: option.id,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(option.id);
             obj.removeFromMap = function () {
                 let sendJson = {
@@ -1061,17 +918,8 @@ class ue4apixz {
                 type: 'AddMeasure',
                 param: randomId
             };
-            // var obj = {
-            //     id: randomId,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
 
-            
+
             var obj = new objectXZ(randomId);
             obj.deleteObject = function () {
                 sendJson = {
@@ -1092,16 +940,7 @@ class ue4apixz {
                 type: 'AddPlaneArea',
                 param: randomId
             };
-            // var obj = {
-            //     id: randomId,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(randomId);
             obj.deleteObject = function () {
                 sendJson = {
@@ -1122,16 +961,7 @@ class ue4apixz {
                 type: 'AddMeasureHeight',
                 param: randomId
             };
-            // var obj = {
-            //     id: randomId,
-            //     category: '',
-            //     removeFromMap: function () {},
-            //     show: function (_param) {},
-            //     deleteObject: '',
-            //     beginPatrol: '',
-            //     stopPatrol: ''
-            // };
-            
+
             var obj = new objectXZ(randomId);
             obj.deleteObject = function () {
                 sendJson = {
@@ -1161,4 +991,4 @@ class ue4apixz {
 
 }
 
-export default ue4apixz; 
+export default ue4apixz;
